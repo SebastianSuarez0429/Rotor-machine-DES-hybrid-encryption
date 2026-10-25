@@ -1,3 +1,7 @@
+import os
+import psutil
+import time
+
 def des_process(text: str, key64: int, mode: str = "encrypt", cipher_blocks: list[int] = None):
 # cipher_blocks will hold a list of the intermediate encrypted blocks during processing and the key has to be 64 bits because DES uses a 64-bit key with 8 parity bits.
 
@@ -101,7 +105,21 @@ def des_process(text: str, key64: int, mode: str = "encrypt", cipher_blocks: lis
         
         return decrypted_bytes.decode('ascii')
 
+def benchmarking(func, *args, **kwargs):
+    start_time = time.perf_counter()
+    cpu_start = time.process_time()
+    result = func(*args, **kwargs)
+    cpu_end = time.process_time()
+    end_time = time.perf_counter()
 
+    elapsed_time = end_time - start_time
+    execution_time_ms = elapsed_time * 1000
+    cpu_usage = ((cpu_end - cpu_start) / elapsed_time * 100) if elapsed_time else 0.0
+
+    print(f"Simulation Time: {execution_time_ms:.5f} ms")
+    print(f"CPU Utilization: {cpu_usage}%")
+
+    return result, execution_time_ms, cpu_usage
 
 KEY = 0x133457799BBCDFF1 # Example DES key for this forsaken encryption.
 messages = ["HOPE", "HELLO", "NEW YEAR"]
@@ -115,3 +133,9 @@ for msg in messages:
     dec_str = des_process("", KEY, mode="decrypt", cipher_blocks=raw_blocks)
     
     print(f"{msg}  {hex_str}  {dec_str}")
+
+
+
+
+print("------------------------------------------------")
+print(benchmarking(des_process, msg, KEY, mode="encrypt"))

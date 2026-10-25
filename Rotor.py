@@ -1,3 +1,6 @@
+import os
+import time
+
 def rotor_cipher(text: str, key: tuple[int, int, int], decrypt=False) -> str:
     r1, r2, r3 = key
     result = []
@@ -27,7 +30,25 @@ def rotor_cipher(text: str, key: tuple[int, int, int], decrypt=False) -> str:
 
     return "".join(result) #Format time!
 
+def benchmarking(func, *args):
+    start_time = time.perf_counter()
+    cpu_start = time.process_time()
+    result = func(*args)
+    cpu_end = time.process_time()
+    end_time = time.perf_counter()
+
+    elapsed_time = end_time - start_time
+    execution_time_ms = elapsed_time * 1000
+    cpu_usage = ((cpu_end - cpu_start) / elapsed_time * 100) if elapsed_time else 0.0
+
+    print(f"Simulation Time: {execution_time_ms:.5f} ms")
+    print(f"CPU Utilization: {cpu_usage}%")
+
+    return result, execution_time_ms, cpu_usage
+
 encrypted = rotor_cipher("NEW YEAR", (5, 2, 7))
 print("Encrypted:", encrypted)
 print("------------------------------------------------")
 print("Decrypted:", rotor_cipher(encrypted, (5, 2, 7), decrypt=True))
+print("------------------------------------------------")
+print(benchmarking(rotor_cipher, "NEW YEAR", (5, 2, 7)))
